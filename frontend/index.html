@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>System Health Monitor · ML-Based Prediction</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+</head>
+
+<body>
+    <div class="nav-bar">
+        <button onclick="showSection('health')">Live System Health Status</button>
+        <button onclick="showSection('metrics')">System Metrics History</button>
+        <button onclick="showSection('trends')">System Health Trends</button>
+    </div>
+
+  <div class="container">
+    <div id="health" class="section active-section">
+    <h1>System Health Monitor</h1> <br>
+    <div class="card">
+        <h2>Latest System Health</h2>
+
+        <p><strong>Status:</strong> <span id="health-status">Loading...</span></p>
+        <p><strong>Health Score:</strong> <span id="health-score">-</span></p>
+
+        <hr>
+
+        <div class="metric-grid">
+            <div class="metric">CPU: <span id="cpu"></span>%</div>
+            <div class="metric">Memory: <span id="memory"></span>%</div>
+            <div class="metric">Disk: <span id="disk"></span>%</div>
+            <div class="metric">Processes: <span id="processes"></span></div>
+        </div>
+
+        <p class="timestamp">
+            Last Updated: <span id="timestamp">-</span>
+        </p>
+    </div>
+
+    <h2 class="section-title">Rule-Based vs ML Health Evaluation</h2>
+
+    <div class="comparison-container">
+        <div class="comparison-card">
+            <h3>Rule-Based Evaluation</h3>
+            <span id="rule-status" class="status-pill">--</span>
+        </div>
+
+        <div class="comparison-card">
+            <h3>ML-Based Prediction</h3>
+            <span id="ml-status" class="status-pill">--</span>
+        </div>
+    </div>
+    </div>
+
+    <div id="metrics" class="section">
+    <h2 class="section-title">Historical System Metrics</h2>
+
+    <div class="table-container">
+        <table id="metrics-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>CPU (%)</th>
+                    <th>Memory (%)</th>
+                    <th>Disk (%)</th>
+                    <th>Processes</th>
+                    <th>Score</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows injected by JS -->
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    <div id="trends" class="section">
+        <h2 class="section-title">System Health Trends Over Time</h2>
+
+        <div class="charts-wrapper">
+            <div class="chart-box">
+                <h3>CPU Usage</h3>
+                <canvas id="cpuChart"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <h3>Memory Usage</h3>
+                <canvas id="memoryChart"></canvas>
+            </div>  
+
+            <div class="chart-box">
+                <h3>Health Score</h3>
+                <canvas id="healthChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="js/main.js"></script>
+  </div>
+
+</body>
+
+<footer class="app-footer">
+    Phase 3 Complete · System Health Monitoring with ML-Based Prediction · Academic Project
+</footer>
+
+</html>
