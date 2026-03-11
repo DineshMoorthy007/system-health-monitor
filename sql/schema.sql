@@ -61,6 +61,28 @@ ON system_metrics(timestamp);
 CREATE INDEX idx_metric 
 ON health_evaluations(metric_id);
 
-SELECT COUNT(*) FROM system_metrics_old;
+CREATE VIEW system_health_view AS
+SELECT
+m.metric_id,
+m.timestamp,
+m.cpu_usage,
+m.memory_usage,
+m.disk_usage,
+m.process_count,
+e.health_score,
+s.status_name AS health_status
+FROM system_metrics m
+JOIN health_evaluations e ON m.metric_id = e.metric_id
+JOIN health_status s ON e.health_status_id = s.health_status_id;
+
+CREATE VIEW system_health_summary AS
+SELECT
+AVG(cpu_usage) AS avg_cpu,
+MAX(cpu_usage) AS max_cpu,
+AVG(memory_usage) AS avg_memory,
+MAX(memory_usage) AS max_memory,
+AVG(health_score) AS avg_health_score
+FROM system_health_view;
+
 SELECT COUNT(*) FROM system_metrics;
 SELECT COUNT(*) FROM health_evaluations;
