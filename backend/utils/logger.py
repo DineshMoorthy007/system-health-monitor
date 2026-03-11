@@ -29,9 +29,9 @@ if not logger.handlers:
 def log_status(metrics, score, status):
     # Console output (unchanged)
     print(
-        f"CPU: {metrics['cpu']}% | "
-        f"RAM: {metrics['memory']}% | "
-        f"Disk: {metrics['disk']}% | "
+        f"CPU: {metrics['cpu_usage']}% | "
+        f"RAM: {metrics['memory_usage']}% | "
+        f"Disk: {metrics['disk_usage']}% | "
         f"Processes: {metrics['process_count']} | "
         f"Score: {score} | "
         f"Status: {status}"
@@ -41,9 +41,9 @@ def log_status(metrics, score, status):
     logger.info(
         "SYSTEM_STATUS",
         extra={
-            "cpu": metrics["cpu"],
-            "memory": metrics["memory"],
-            "disk": metrics["disk"],
+            "cpu": metrics["cpu_usage"],
+            "memory": metrics["memory_usage"],
+            "disk": metrics["disk_usage"],
             "process_count": metrics["process_count"],
             "score": score,
             "status": status

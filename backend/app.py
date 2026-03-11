@@ -5,7 +5,7 @@ from flask_cors import CORS
 
 from backend.collectors.os_metrics import collect_metrics
 from backend.algorithms.rule_engine import evaluate_system_health
-from backend.database.db_operations import insert_metrics
+from backend.database.db_operations import insert_metrics, insert_evaluation
 from backend.database.db_connection import get_db_connection
 from backend.utils.logger import log_status
 from backend.ml.predict import predict_health
@@ -19,7 +19,8 @@ def run_monitor():
         metrics = collect_metrics()
         score, status = evaluate_system_health(metrics)
 
-        insert_metrics(metrics, score, status)
+        metric_id = insert_metrics(metrics)
+        insert_evaluation(metric_id, score, status)
         log_status(metrics, score, status)
 
         time.sleep(3)
@@ -30,10 +31,18 @@ def get_latest_health():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT timestamp, cpu_usage, memory_usage, disk_usage,
-               process_count, health_score, health_status
-        FROM system_metrics
-        ORDER BY timestamp DESC
+        SELECT
+            m.timestamp,
+            m.cpu_usage,
+            m.memory_usage,
+            m.disk_usage,
+            m.process_count,
+            e.health_score,
+            s.status_name AS health_status
+        FROM system_metrics m
+        JOIN health_evaluations e ON m.metric_id = e.metric_id
+        JOIN health_status s ON e.health_status_id = s.health_status_id
+        ORDER BY m.timestamp DESC
         LIMIT 1
     """)
 
@@ -50,10 +59,18 @@ def get_recent_metrics():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT timestamp, cpu_usage, memory_usage, disk_usage,
-               process_count, health_score, health_status
-        FROM system_metrics
-        ORDER BY timestamp DESC
+        SELECT
+            m.timestamp,
+            m.cpu_usage,
+            m.memory_usage,
+            m.disk_usage,
+            m.process_count,
+            e.health_score,
+            s.status_name AS health_status
+        FROM system_metrics m
+        JOIN health_evaluations e ON m.metric_id = e.metric_id
+        JOIN health_status s ON e.health_status_id = s.health_status_id
+        ORDER BY m.timestamp DESC
         LIMIT 10
     """)
 
@@ -71,10 +88,18 @@ def get_metrics_history():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT timestamp, cpu_usage, memory_usage, disk_usage,
-               process_count, health_score, health_status
-        FROM system_metrics
-        ORDER BY timestamp DESC
+        SELECT
+            m.timestamp,
+            m.cpu_usage,
+            m.memory_usage,
+            m.disk_usage,
+            m.process_count,
+            e.health_score,
+            s.status_name AS health_status
+        FROM system_metrics m
+        JOIN health_evaluations e ON m.metric_id = e.metric_id
+        JOIN health_status s ON e.health_status_id = s.health_status_id
+        ORDER BY m.timestamp DESC
         LIMIT %s
     """, (limit,))
 
@@ -91,12 +116,13 @@ def get_health_summary():
 
     cursor.execute("""
         SELECT
-            AVG(cpu_usage) AS avg_cpu,
-            MAX(cpu_usage) AS max_cpu,
-            AVG(memory_usage) AS avg_memory,
-            MAX(memory_usage) AS max_memory,
-            AVG(health_score) AS avg_health_score
-        FROM system_metrics
+            AVG(m.cpu_usage) AS avg_cpu,
+            MAX(m.cpu_usage) AS max_cpu,
+            AVG(m.memory_usage) AS avg_memory,
+            MAX(m.memory_usage) AS max_memory,
+            AVG(e.health_score) AS avg_health_score
+        FROM system_metrics m
+        JOIN health_evaluations e ON m.metric_id = e.metric_id
     """)
 
     summary = cursor.fetchone()
@@ -111,10 +137,15 @@ def predict_system_health():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT cpu_usage, memory_usage, disk_usage,
-               process_count, health_score
-        FROM system_metrics
-        ORDER BY timestamp DESC
+        SELECT
+            m.cpu_usage,
+            m.memory_usage,
+            m.disk_usage,
+            m.process_count,
+            e.health_score
+        FROM system_metrics m
+        JOIN health_evaluations e ON m.metric_id = e.metric_id
+        ORDER BY m.timestamp DESC
         LIMIT 1
     """)
 

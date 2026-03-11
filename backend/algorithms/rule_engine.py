@@ -6,9 +6,9 @@ def evaluate_system_health(metrics):
 
     score = 0
 
-    cpu = metrics["cpu"]
-    memory = metrics["memory"]
-    disk = metrics["disk"]
+    cpu = metrics["cpu_usage"]
+    memory = metrics["memory_usage"]
+    disk = metrics["disk_usage"]
     process_count = metrics["process_count"]
 
     # CPU rules

@@ -8,8 +8,8 @@ def collect_metrics():
     process_count = len(psutil.pids())
 
     return {
-        "cpu": cpu,
-        "memory": memory,
-        "disk": disk,
+        "cpu_usage": cpu,
+        "memory_usage": memory,
+        "disk_usage": disk,
         "process_count": process_count
     }
