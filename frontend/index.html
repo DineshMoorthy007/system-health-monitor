@@ -4,153 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Health Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <!-- Optional fallback for browsers without SVG favicon support -->
+    <link rel="alternate icon" href="./favicon.ico">
 </head>
 
 <body>
-
-    <!-- Navigation Bar -->
-    <nav class="nav-bar">
-        <span class="nav-title">System Health Monitor</span>
-        <div class="nav-buttons">
-            <button class="nav-btn active-btn" onclick="showSection('health', this)">Live System Health</button>
-            <button class="nav-btn" onclick="showSection('metrics', this)">Metrics Table</button>
-            <button class="nav-btn" onclick="showSection('trends', this)">Health Trends</button>
-        </div>
-    </nav>
-
-    <div class="container">
-
-        <!-- ── Live System Health ── -->
-        <div id="health" class="section active-section">
-
-            <div class="card">
-                <div class="card-header">
-                    <h2>Latest System Health</h2>
-                    <span id="loading-health" class="loading-badge">Loading&#8230;</span>
-                </div>
-
-                <div class="status-row">
-                    <div>
-                        <span class="label">Status</span>
-                        <span id="health-status" class="status-pill">--</span>
-                    </div>
-                    <div>
-                        <span class="label">Health Score</span>
-                        <span id="health-score" class="score-value">--</span>
-                    </div>
-                </div>
-
-                <div class="metric-grid">
-                    <div class="metric-card">
-                        <div class="metric-label">CPU Usage</div>
-                        <div class="metric-value"><span id="cpu">--</span>%</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Memory Usage</div>
-                        <div class="metric-value"><span id="memory">--</span>%</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Disk Usage</div>
-                        <div class="metric-value"><span id="disk">--</span>%</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Processes</div>
-                        <div class="metric-value"><span id="processes">--</span></div>
-                    </div>
-                </div>
-
-                <p class="timestamp">Last Updated: <span id="timestamp">--</span></p>
-            </div>
-
-            <h2 class="section-title">Rule-Based vs ML Health Evaluation</h2>
-
-            <div class="comparison-container">
-                <div class="comparison-card">
-                    <h3>Rule-Based Evaluation</h3>
-                    <span id="rule-status" class="status-pill">--</span>
-                </div>
-                <div class="comparison-card">
-                    <h3>ML-Based Prediction</h3>
-                    <span id="ml-status" class="status-pill">--</span>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- ── Metrics Table ── -->
-        <div id="metrics" class="section">
-
-            <div class="card">
-                <div class="card-header">
-                    <h2>Historical System Metrics</h2>
-                    <span id="loading-table" class="loading-badge">Loading&#8230;</span>
-                </div>
-                <div class="table-container">
-                    <table id="metrics-table">
-                        <thead>
-                            <tr>
-                                <th>Timestamp</th>
-                                <th>CPU (%)</th>
-                                <th>Memory (%)</th>
-                                <th>Disk (%)</th>
-                                <th>Processes</th>
-                                <th>Score</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Rows injected by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- ── Health Trends ── -->
-        <div id="trends" class="section">
-
-            <h2 class="section-title">System Health Trends Over Time</h2>
-
-            <div class="charts-wrapper">
-                <div class="chart-box">
-                    <h3>CPU Usage</h3>
-                    <div class="chart-canvas-wrapper">
-                        <canvas id="cpuChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-box">
-                    <h3>Memory Usage</h3>
-                    <div class="chart-canvas-wrapper">
-                        <canvas id="memoryChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-box">
-                    <h3>Disk Usage</h3>
-                    <div class="chart-canvas-wrapper">
-                        <canvas id="diskChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-box">
-                    <h3>Health Score</h3>
-                    <div class="chart-canvas-wrapper">
-                        <canvas id="healthChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
+    <div class="global-live-indicator" aria-label="System is live">
+        <span class="live-pulse" aria-hidden="true"></span>
+        <span>Live</span>
     </div>
 
-    <footer class="app-footer">
-        Phase 3 Complete &middot; System Health Monitoring with ML-Based Prediction &middot; Academic Project
-    </footer>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img src="assets/favicon.svg" width="28" height="28" class="dashboard-logo" alt="System Health Monitor logo">
+                <div class="brand-copy">
+                    <p class="sidebar-eyebrow">Enterprise monitoring</p>
+                    <h1 class="sidebar-title">System Health Monitor</h1>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav" aria-label="Dashboard sections">
+                <button class="sidebar-link active" type="button" data-section="health" aria-current="page">Live System Health</button>
+                <button class="sidebar-link" type="button" data-section="metrics">Metrics Table</button>
+                <button class="sidebar-link" type="button" data-section="trends">Health Trends</button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="sidebar-footer-label">Monitoring stack</span>
+                <span class="sidebar-footer-value">Rule engine + ML inference</span>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-inner">
+                <section id="health" class="section active-section">
+                    <div class="card hero-card">
+                        <div class="card-header">
+                            <div>
+                                <p class="section-kicker">Overview</p>
+                                <h2>Latest System Health</h2>
+                            </div>
+                            <span id="loading-health" class="loading-badge">Loading&#8230;</span>
+                        </div>
+
+                        <div class="status-row">
+                            <div>
+                                <span class="label">Status</span>
+                                <span id="health-status" class="status-pill">--</span>
+                            </div>
+                            <div>
+                                <span class="label">Health Score</span>
+                                <span id="health-score" class="score-value">--</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-grid">
+                            <div class="metric-card">
+                                <div class="metric-label">CPU Usage</div>
+                                <div class="metric-value"><span id="cpu">--</span>%</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Memory Usage</div>
+                                <div class="metric-value"><span id="memory">--</span>%</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Disk Usage</div>
+                                <div class="metric-value"><span id="disk">--</span>%</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Processes</div>
+                                <div class="metric-value"><span id="processes">--</span></div>
+                            </div>
+                        </div>
+
+                        <p class="timestamp">Last Updated: <span id="timestamp">--</span></p>
+                    </div>
+
+                    <div class="section-heading-row">
+                        <div>
+                            <p class="section-kicker">Decisioning</p>
+                            <h2 class="section-title">Rule-Based vs ML Health Evaluation</h2>
+                        </div>
+                    </div>
+
+                    <div class="comparison-container">
+                        <div class="comparison-card">
+                            <h3>Rule-Based Evaluation</h3>
+                            <span id="rule-status" class="status-pill">--</span>
+                        </div>
+                        <div class="comparison-card">
+                            <h3>ML-Based Prediction</h3>
+                            <span id="ml-status" class="status-pill">--</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="metrics" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <p class="section-kicker">Operational history</p>
+                                <h2>Historical System Metrics</h2>
+                            </div>
+                            <span id="loading-table" class="loading-badge">Loading&#8230;</span>
+                        </div>
+
+                        <div class="table-container">
+                            <table id="metrics-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>CPU (%)</th>
+                                        <th>Memory (%)</th>
+                                        <th>Disk (%)</th>
+                                        <th>Processes</th>
+                                        <th>Score</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows injected by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="trends" class="section">
+                    <div class="section-heading-row">
+                        <div>
+                            <p class="section-kicker">Analytics</p>
+                            <h2 class="section-title">System Health Trends Over Time</h2>
+                        </div>
+                    </div>
+
+                    <div class="charts-wrapper">
+                        <div class="chart-box">
+                            <h3>CPU Usage</h3>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="cpuChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-box">
+                            <h3>Memory Usage</h3>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="memoryChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-box">
+                            <h3>Disk Usage</h3>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="diskChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-box">
+                            <h3>Health Score</h3>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="healthChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <footer class="app-footer">
+                System Health Monitoring with ML-Based Prediction
+            </footer>
+        </main>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/main.js"></script>
