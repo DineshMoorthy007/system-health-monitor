@@ -2,9 +2,9 @@
    System Health Monitor - Dashboard JavaScript
    ============================================================= */
 
-const LATEST_API = "http://127.0.0.1:5000/api/health/latest";
-const PREDICT_API = "http://127.0.0.1:5000/api/health/predict";
-const HISTORY_API = "http://127.0.0.1:5000/api/metrics/history";
+const LATEST_API  = "https://system-monitor-backend-production.up.railway.app/api/health/latest";
+const PREDICT_API = "https://system-monitor-backend-production.up.railway.app/api/health/predict";
+const HISTORY_API = "https://system-monitor-backend-production.up.railway.app/api/metrics/history";
 
 const sectionButtons = Array.from(document.querySelectorAll("[data-section]"));
 
