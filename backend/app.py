@@ -1,5 +1,7 @@
+import os
 import time
 import threading
+import logging
 from flask import Flask, jsonify
 from flask_cors import CORS
 
@@ -10,20 +12,33 @@ from backend.database.db_connection import get_db_connection
 from backend.utils.logger import log_status
 from backend.ml.predict import predict_health
 
+# Configure logging for production
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 CORS(app)
 
 def run_monitor():
-    print("Monitoring thread started")
+    """Background monitoring thread with error handling."""
+    logger.info("Monitoring thread started")
     while True:
-        metrics = collect_metrics()
-        score, status = evaluate_system_health(metrics)
+        try:
+            metrics = collect_metrics()
+            score, status = evaluate_system_health(metrics)
 
-        metric_id = insert_metrics(metrics)
-        insert_evaluation(metric_id, score, status)
-        log_status(metrics, score, status)
+            metric_id = insert_metrics(metrics)
+            insert_evaluation(metric_id, score, status)
+            log_status(metrics, score, status)
 
-        time.sleep(3)
+            time.sleep(3)
+        except Exception as e:
+            logger.error(f"Error in monitoring thread: {str(e)}", exc_info=True)
+            time.sleep(5)  # Wait before retrying
 
 @app.route("/api/health/latest", methods=["GET"])
 def get_latest_health():
@@ -136,5 +151,13 @@ def predict_system_health():
 
 
 if __name__ == "__main__":
-    threading.Thread(target=run_monitor, daemon=True).start()
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    # Start monitoring thread as daemon
+    monitor_thread = threading.Thread(target=run_monitor, daemon=True)
+    monitor_thread.start()
+    logger.info("Flask app starting...")
+    
+    logger.info("Starting Flask server on 0.0.0.0 with PORT env fallback to 5000")
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000))
+    )

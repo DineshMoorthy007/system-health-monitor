@@ -47,6 +47,9 @@ system-health-monitor/
 │  └─ schema.sql
 ├─ docs/
 ├─ logs/
+├─ Dockerfile
+├─ .dockerignore
+├─ .env.example
 ├─ requirements.txt
 └─ README.md
 ```
@@ -80,16 +83,28 @@ DB_HOST=localhost
 DB_USER=your_username
 DB_PASSWORD=your_password
 DB_NAME=system_health_db
+DB_PORT=3306
+PORT=5000
 ```
 
 ## Run the Backend
 From the project root:
 
 ```bash
-python backend/app.py
+python -m backend.app
 ```
 
-The API starts on http://127.0.0.1:5000 and also runs a background thread to collect metrics.
+The API starts on http://127.0.0.1:5000 by default (or the value of PORT) and runs a background thread to collect metrics.
+
+## Run with Docker
+From the project root:
+
+```bash
+docker build -t system-health-monitor .
+docker run --env-file .env -p 5000:5000 system-health-monitor
+```
+
+The container health check uses `/api/health/latest` on `PORT` (default `5000`).
 
 ## Run the Frontend
 Open the dashboard in your browser:
@@ -123,10 +138,10 @@ Saved models are stored in backend/ml/saved_models.
 
 ## Notes
 - The prediction endpoint uses the latest stored metrics to run inference.
-- If you run app.py from a different working directory, set PYTHONPATH or run from the project root.
+- Run the backend from the project root with `python -m backend.app` to avoid import path issues.
 
 ## Troubleshooting
-- ModuleNotFoundError: run from the project root: python backend/app.py
+- ModuleNotFoundError: run from the project root: python -m backend.app
 - Database connection error: verify .env values and MySQL status
 - Empty dashboard: confirm backend is running and database has data
 
