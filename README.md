@@ -10,6 +10,13 @@
 
 ML-based system health monitoring for CPU, memory, disk, and process load with rule-based evaluation, database storage, and a live dashboard. The backend collects OS metrics, stores them in MySQL, and serves APIs for the frontend dashboard and ML prediction.
 
+## Live Demo
+
+The frontend is deployed on GitHub Pages:
+**[https://dineshmoorthy007.github.io/system-health-monitor/](https://dineshmoorthy007.github.io/system-health-monitor/)**
+
+> **Note:** The backend service (hosted on Railway) is currently **suspended**. The live demo will load the dashboard UI, but API calls will not return live data. To get the full experience, run the backend locally by following the [Installation](#installation) and [Run the Backend](#run-the-backend) sections below.
+
 ## Features
 - Live system metrics collection (CPU, memory, disk, process count)
 - Rule-based health scoring and status evaluation
@@ -152,6 +159,118 @@ For detailed information about the project's development phases and architecture
 - [Phase 1: System Monitoring & Rule-Based Evaluation](docs/phase1_overview.md) — OS metric collection and health scoring
 - [Phase 2: Visualization & System Health Trends](docs/phase2_overview.md) — Dashboard and data visualization
 - [Phase 3: Machine Learning-Based Prediction](docs/phase3_overview.md) — ML model training and prediction
+
+## Deployment
+
+This section explains how this project was deployed — frontend via **GitHub Pages** and backend + database via **Railway**. Use it as a guide to deploy your own fork.
+
+---
+
+### Frontend — GitHub Pages
+
+GitHub Pages hosts static files (HTML, CSS, JS) directly from a repository branch or folder. Here's how the frontend of this project is deployed automatically on every push to `main`:
+
+**How it works:**
+1. A GitHub Actions workflow (`.github/workflows/deploy-frontend.yml`) is triggered on every push to `main`.
+2. The workflow checks out the repo, configures GitHub Pages, uploads the `frontend/` folder as a Pages artifact, and deploys it.
+3. GitHub Pages serves the contents of `frontend/` as a static website.
+
+**Steps to set it up yourself:**
+1. Go to your repository → **Settings** → **Pages**.
+2. Under *Source*, select **GitHub Actions**.
+3. Create the workflow file at `.github/workflows/deploy-frontend.yml` with the following content:
+
+```yaml
+name: Deploy Frontend to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload frontend folder
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./frontend
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+4. Push to `main` — the workflow will run and your site will be live at `https://<your-username>.github.io/<repo-name>/`.
+
+> **Tip:** If your frontend JS makes API calls to the backend, make sure the backend URL is configurable (e.g., via a constant in `frontend/js/`) so you can point it to your Railway deployment URL instead of `localhost`.
+
+---
+
+### Backend + Database — Railway
+
+[Railway](https://railway.app) is a cloud platform that can host your Flask app and a MySQL database together with minimal configuration.
+
+**How it works:**
+- Railway reads your `Dockerfile` (or auto-detects Python) to build and run the Flask backend.
+- A MySQL plugin is added in the same Railway project, and Railway injects the DB connection variables as environment variables automatically.
+- Your app reads these from `.env` / environment variables (already set up via `.env.example`).
+
+**Steps to deploy:**
+
+1. **Create a Railway account** at [railway.app](https://railway.app) and create a new project.
+
+2. **Add a MySQL database:**
+   - Inside the project, click **+ New** → **Database** → **MySQL**.
+   - Railway provisions the database and exposes variables like `MYSQL_HOST`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`, and `MYSQL_PORT`.
+
+3. **Deploy the backend:**
+   - Click **+ New** → **GitHub Repo** and connect your repository.
+   - Railway detects the `Dockerfile` and builds it.
+   - In the service's **Variables** tab, add your environment variables (map Railway's MySQL vars to the names your app expects):
+     ```
+     DB_HOST=${{MySQL.MYSQLHOST}}
+     DB_USER=${{MySQL.MYSQLUSER}}
+     DB_PASSWORD=${{MySQL.MYSQLPASSWORD}}
+     DB_NAME=${{MySQL.MYSQLDATABASE}}
+     DB_PORT=${{MySQL.MYSQLPORT}}
+     PORT=5000
+     ```
+   - Railway injects these at runtime.
+
+4. **Run the DB schema:**
+   - Open the MySQL service in Railway → **Query** tab (or connect via a client using the Railway-provided credentials).
+   - Paste and run the contents of `sql/schema.sql` to create the required tables.
+
+5. **Get the public URL:**
+   - In your backend service settings, go to **Settings** → **Networking** → **Generate Domain**.
+   - Copy the generated URL (e.g., `https://your-service.up.railway.app`) and update the API base URL in your frontend JS files.
+
+6. **Re-deploy the frontend** (push to `main`) so it points to the live Railway backend URL.
+
+> **Free tier note:** Railway's free hobby plan has limited runtime hours per month. If the service runs out of hours or is inactive, it will be **suspended** — which is why the live demo on this repo currently shows the dashboard UI without live data. To restore it, upgrade the plan or redeploy the service.
+
+---
 
 ## License
 MIT License. See LICENSE for details.
