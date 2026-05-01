@@ -10,12 +10,12 @@
 
 ML-based system health monitoring for CPU, memory, disk, and process load with rule-based evaluation, database storage, and a live dashboard. The backend collects OS metrics, stores them in MySQL, and serves APIs for the frontend dashboard and ML prediction.
 
-## 🌐 Live Demo
+## Live Demo
 
 The frontend is deployed on GitHub Pages:
-👉 **[https://dineshmoorthy007.github.io/system-health-monitor/](https://dineshmoorthy007.github.io/system-health-monitor/)**
+**[https://dineshmoorthy007.github.io/system-health-monitor/](https://dineshmoorthy007.github.io/system-health-monitor/)**
 
-> ⚠️ **Note:** The backend service (hosted on Railway) is currently **suspended**. The live demo will load the dashboard UI, but API calls will not return live data. To get the full experience, run the backend locally by following the [Installation](#installation) and [Run the Backend](#run-the-backend) sections below.
+> **Note:** The backend service (hosted on Railway) is currently **suspended**. The live demo will load the dashboard UI, but API calls will not return live data. To get the full experience, run the backend locally by following the [Installation](#installation) and [Run the Backend](#run-the-backend) sections below.
 
 ## Features
 - Live system metrics collection (CPU, memory, disk, process count)
@@ -166,7 +166,7 @@ This section explains how this project was deployed — frontend via **GitHub Pa
 
 ---
 
-### 🖥️ Frontend — GitHub Pages
+### Frontend — GitHub Pages
 
 GitHub Pages hosts static files (HTML, CSS, JS) directly from a repository branch or folder. Here's how the frontend of this project is deployed automatically on every push to `main`:
 
@@ -223,11 +223,11 @@ jobs:
 
 4. Push to `main` — the workflow will run and your site will be live at `https://<your-username>.github.io/<repo-name>/`.
 
-> 💡 **Tip:** If your frontend JS makes API calls to the backend, make sure the backend URL is configurable (e.g., via a constant in `frontend/js/`) so you can point it to your Railway deployment URL instead of `localhost`.
+> **Tip:** If your frontend JS makes API calls to the backend, make sure the backend URL is configurable (e.g., via a constant in `frontend/js/`) so you can point it to your Railway deployment URL instead of `localhost`.
 
 ---
 
-### ⚙️ Backend + Database — Railway
+### Backend + Database — Railway
 
 [Railway](https://railway.app) is a cloud platform that can host your Flask app and a MySQL database together with minimal configuration.
 
@@ -268,7 +268,7 @@ jobs:
 
 6. **Re-deploy the frontend** (push to `main`) so it points to the live Railway backend URL.
 
-> ⚠️ **Free tier note:** Railway's free hobby plan has limited runtime hours per month. If the service runs out of hours or is inactive, it will be **suspended** — which is why the live demo on this repo currently shows the dashboard UI without live data. To restore it, upgrade the plan or redeploy the service.
+> **Free tier note:** Railway's free hobby plan has limited runtime hours per month. If the service runs out of hours or is inactive, it will be **suspended** — which is why the live demo on this repo currently shows the dashboard UI without live data. To restore it, upgrade the plan or redeploy the service.
 
 ---
 
