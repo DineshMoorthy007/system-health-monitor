@@ -260,6 +260,12 @@ select {
     color: #0f172a;
 }
 
+.global-live-indicator.offline {
+    background: #fff1f2;
+    border-color: #fecdd3;
+    color: #9f1239;
+}
+
 .live-pulse {
     width: 8px;
     height: 8px;
@@ -268,6 +274,12 @@ select {
     background-color: #10b981;
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
     animation: livePulse 1.8s infinite;
+}
+
+.global-live-indicator.offline .live-pulse {
+    background-color: #ef4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.65);
+    animation: none;
 }
 
 .loading-badge {

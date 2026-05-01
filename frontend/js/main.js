@@ -13,6 +13,17 @@ let memoryChart;
 let diskChart;
 let healthChart;
 
+function setGlobalIndicatorState(isOnline) {
+    const indicator = document.querySelector(".global-live-indicator");
+    const liveText = document.getElementById("global-live-text");
+
+    if (!indicator || !liveText) return;
+
+    indicator.classList.toggle("offline", !isOnline);
+    indicator.setAttribute("aria-label", isOnline ? "System is live" : "System is offline");
+    liveText.textContent = isOnline ? "Live" : "Offline";
+}
+
 function showLoading(id) {
     const el = document.getElementById(id);
     if (el) {
@@ -43,7 +54,9 @@ async function fetchHealthData() {
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
         const data = await resp.json();
-        if (!data) return;
+        if (!data) throw new Error("Empty health payload");
+
+        setGlobalIndicatorState(true);
 
         applyStatus(document.getElementById("health-status"), data.health_status);
         document.getElementById("health-score").textContent = data.health_score;
@@ -56,6 +69,7 @@ async function fetchHealthData() {
         applyStatus(document.getElementById("rule-status"), data.health_status);
     } catch (err) {
         console.error("Health fetch error:", err);
+        setGlobalIndicatorState(false);
         const status = document.getElementById("health-status");
         if (status) {
             status.className = "status-pill status-CRITICAL";
